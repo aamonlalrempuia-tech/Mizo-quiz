@@ -1,167 +1,149 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="lus">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mizoram Culture Quiz</title>
+<title>MIZORAM CULTURE QUIZ</title>
 <style>
-*{box-sizing:border-box}
-body{
- margin:0;
- font-family:Arial,sans-serif;
- background:linear-gradient(135deg,#09203f,#537895);
- color:white;
- text-align:center;
- padding:20px;
-}
-.container{
- max-width:500px;
- margin:auto;
- background:#ffffff18;
- padding:22px;
- border-radius:20px;
-}
-h1{color:#ffe082}
-button{
- width:100%;
- padding:14px;
- margin:8px 0;
- border:0;
- border-radius:12px;
- font-size:16px;
- font-weight:bold;
- background:#ffca28;
- color:#222;
-}
-button:hover{background:#fff176}
-.option{background:white;color:#222}
-#question{font-size:20px;margin:20px 0}
-#result{font-size:20px;margin:15px}
-select{
- width:100%;padding:12px;
- border-radius:10px;margin:8px 0;
-}
+body{font-family:Arial;background:#eef5fa;margin:0;color:#17324d}
+header{background:#075985;color:white;text-align:center;padding:25px 10px}
+main{max-width:600px;margin:20px auto;padding:12px}
+.card{background:white;padding:20px;border-radius:15px;margin-bottom:15px;box-shadow:0 2px 10px #0002}
+h2{color:#075985}
+button,select{width:100%;padding:14px;margin:7px 0;border:0;border-radius:9px;font-size:16px}
+button{background:#087eaa;color:white;font-weight:bold}
+.option{background:#e8f2f8;color:#17324d;text-align:left}
+.correct{background:#baf2d0}
+.wrong{background:#ffcaca}
+.hidden{display:none}
+#progress{height:9px;background:#ddd;border-radius:8px}
+#bar{height:9px;background:#0891b2;width:0;border-radius:8px}
 </style>
 </head>
 <body>
-<div class="container">
-<h1>🌺 MIZORAM CULTURE QUIZ 🌺</h1>
-<p>Kan Hnam Nunphung Zirna</p>
-
-<div id="menu">
-<h3>Category thlang rawh</h3>
+<header>
+<h1>🏞️ MIZORAM CULTURE QUIZ</h1>
+<p>Mizoram nunphung leh chanchin i hriatna fiah rawh</p>
+</header>
+<main>
+<div class="card" id="start">
+<h2>Quiz tan rawh</h2>
+<label>Category thlang rawh</label>
 <select id="category">
-<option value="all">All Categories</option>
-<option value="culture">Mizo Culture</option>
-<option value="festival">Festivals</option>
-<option value="food">Traditional Food</option>
-<option value="history">History</option>
+<option value="all">Category zawng zawng</option>
+<option value="culture">Mizo Nunphung</option>
+<option value="festival">Mizo Kut</option>
+<option value="food">Mizo Ei leh In</option>
+<option value="history">Mizoram Chanchin</option>
 </select>
-
-<select id="level">
-<option value="all">All Levels</option>
-<option value="easy">Easy</option>
-<option value="medium">Medium</option>
-<option value="hard">Hard</option>
+<label>Harsat zawng thlang rawh</label>
+<select id="difficulty">
+<option value="all">Harsat zawng zawng</option>
+<option value="Easy">Awlsam</option>
+<option value="Medium">La tawk</option>
+<option value="Hard">Harsa</option>
 </select>
-<button onclick="startQuiz()">START GAME</button>
+<button onclick="startQuiz()">Quiz tan rawh</button>
 </div>
-
-<div id="game" style="display:none">
-<p id="progress"></p>
-<h3 id="question"></h3>
+<div class="card hidden" id="game">
+<p id="categoryName"></p>
+<p id="number"></p>
+<div id="progress"><div id="bar"></div></div>
+<h2 id="question"></h2>
 <div id="answers"></div>
-<div id="result"></div>
-<button id="next" onclick="nextQuestion()" style="display:none">NEXT ➜</button>
+<p id="feedback"></p>
+<p id="explanation"></p>
+<button id="next" class="hidden" onclick="nextQuestion()">Zawhna dawt leh</button>
 </div>
-
-<div id="finish" style="display:none">
-<h2>🎉 Quiz Zawh Fel!</h2>
+<div class="card hidden" id="result">
+<h2>Quiz i zawh ta!</h2>
 <h1 id="score"></h1>
 <p id="message"></p>
-<button onclick="location.reload()">PLAY AGAIN</button>
+<button onclick="location.reload()">A tirah kir leh rawh</button>
 </div>
-</div>
-
+</main>
 <script>
-const questions=[
-{c:"culture",l:"easy",q:"Mizo hnam zai hlui ber pakhat chu eng nge?",a:["Hlado","Rock","Jazz","Rap"],x:0},
-{c:"culture",l:"easy",q:"Mizo hnam tawng chu eng nge?",a:["Mizo","Hindi","Tamil","Bengali"],x:0},
-{c:"festival",l:"easy",q:"Chapchar Kut hi eng tik lai nge hman thin?",a:["Thlasik","Khawzawl","Kum thar","Nipui"],x:3},
-{c:"festival",l:"easy",q:"Mim Kut hi eng thlai nen nge inzawm?",a:["Mim","Buh","Vaibel","Hmui"],x:0},
-{c:"food",l:"easy",q:"Bai hi eng nge?",a:["Mizo chaw","Silai","In sakna","Hnam zai"],x:0},
-{c:"culture",l:"medium",q:"Mizo hnam nunphungah Tlawmngaihna chu eng nge?",a:["Mahni chauh ngaihtuahna","Mi dang tanpui leh inpekna","Sum lakna","Inthlahdahna"],x:1},
-{c:"history",l:"medium",q:"Mizoram statehood a lo chang kum chu eng nge?",a:["1972","1987","1990","2000"],x:1},
-{c:"festival",l:"medium",q:"Pawl Kut hi eng thil nen nge inzawm?",a:["Buh thar","Thing chhuah","Sava","Tuipui"],x:0},
-{c:"food",l:"medium",q:"Sawhchiar-ah eng thil nge tel thin?",a:["Buh leh sa","Cake","Bread","Noodles"],x:0},
-{c:"history",l:"hard",q:"Mizoram statehood a lo chang ni chu eng ni nge?",a:["20 February","15 August","26 January","1 December"],x:0},
-{c:"culture",l:"hard",q:"Mizo hnam zai leh lam hriat lar tak chu eng nge?",a:["Cheraw","Bharatanatyam","Kathak","Bhangra"],x:0},
-{c:"festival",l:"hard",q:"Chapchar Kut hian eng thil nge lawm?",a:["Ram lo paih zawh hnu","Buh seng zawh","Kum thar","Thingtlang"],x:0}
+const data=[
+["culture","Easy","Mizo hnam lam lar tak chu eng nge?",["Cheraw","Bhangra","Kathak","Garba"],0,"Cheraw hi Mizo hnam lam lar tak a ni."],
+["culture","Easy","Cheraw-ah eng thil nge hman thin?",["Bamboo","Thir","Lung","Thingkung"],0,"Cheraw-ah bamboo hman thin a ni."],
+["culture","Easy","Mizo tawng ziaknaah eng alphabet nge hman?",["Roman","Arabic","Chinese","Greek"],0,"Mizo tawng ziaknaah Roman alphabet hman a ni."],
+["culture","Easy","Mizo hnam puan hming lar tak pakhat chu eng nge?",["Puanchei","Saree","Dhoti","Mekhela"],0,"Puanchei hi Mizo hnam puan lar tak a ni."],
+["culture","Easy","Tlawmngaihna tih awmzia chu eng nge?",["Mi dang tan theihtawp chhuah","Mahni chauh ngaihtuah","Mi dang tihduhdah","Thil zuar"],0,"Tlawmngaihna chu mi dang tan theihtawp chhuahna a ni."],
+["culture","Easy","Mizo tawngin 'Ka lawm e' tih hi eng nge?",["Thank you","Good night","Goodbye","Sorry"],0,"'Ka lawm e' tih chu lawmthu sawina a ni."],
+["culture","Medium","Cheraw hi eng hmingin nge sawi lan thin?",["Bamboo dance","Fire dance","War dance","Rain dance"],0,"Cheraw chu Bamboo dance tia sawi lan a ni."],
+["culture","Medium","Mizo tawng hi eng tawng chhungkhat zinga mi nge?",["Tibeto-Burman","Romance","Germanic","Slavic"],0,"Mizo tawng hi Tibeto-Burman tawng chhungkhat zinga mi a ni."],
+["culture","Medium","Mizo nunphungah 'chhungkua' tih hi eng nge?",["Family","Market","School","River"],0,"Chhungkua chu family tihna a ni."],
+["culture","Medium","Mizo hnam puan chei danah eng nge awm?",["Rawng leh chei mawi","Number chauh","Thlalak chauh","Zi chauh"],0,"Mizo puanah rawng leh chei mawi chi hrang hrang a awm."],
+["culture","Hard","Tlawmngai mi chu eng ang mi nge?",["Mi dang tan theihtawp chhuaktu","Mahni chauh ngaihtuatu","Mi dang hmusitu","Thil neih tamtu"],0,"Tlawmngai mi chu mi dang tan theihtawp chhuaktu a ni."],
+["culture","Hard","Mizo tawng hi eng tawng chhungkhat zinga mi nge?",["Tibeto-Burman","Indo-European","Dravidian","Austronesian"],0,"Mizo tawng chu Tibeto-Burman tawng chhungkhat zinga mi a ni."]
 ];
-
-let list=[],index=0,points=0,answered=false;
-
-function startQuiz(){
- let c=document.getElementById("category").value;
- let l=document.getElementById("level").value;
- list=questions.filter(q=>(c==="all"||q.c===c)&&(l==="all"||q.l===l));
- if(!list.length)return;
- list.sort(()=>Math.random()-.5);
- index=0;points=0;
- document.getElementById("menu").style.display="none";
- document.getElementById("game").style.display="block";
- showQuestion();
-}
-
-function showQuestion(){
- answered=false;
- let q=list[index];
- document.getElementById("progress").innerText=
- "Question "+(index+1)+" / "+list.length+" | Score: "+points;
- document.getElementById("question").innerText=q.q;
- document.getElementById("result").innerText="";
- document.getElementById("next").style.display="none";
- let html="";
- q.a.forEach((a,i)=>{
- html+=`<button class="option" onclick="checkAnswer(${i})">${a}</button>`;
- });
- document.getElementById("answers").innerHTML=html;
-}
-
-function checkAnswer(i){
- if(answered)return;
- answered=true;
- let q=list[index];
- let buttons=document.querySelectorAll(".option");
- buttons.forEach((b,j)=>{
- b.disabled=true;
- if(j===q.x)b.style.background="#81c784";
- if(j===i&&i!==q.x)b.style.background="#ef9a9a";
- });
- if(i===q.x){
- points++;
- document.getElementById("result").innerText="🎉 Dik tak!";
- }else{
- document.getElementById("result").innerText="❌ Dik lo. Answer: "+q.a[q.x];
- }
- document.getElementById("next").style.display="block";
- document.getElementById("next").innerText=
- index===list.length-1?"FINISH":"NEXT ➜";
-}
-
-function nextQuestion(){
- index++;
- if(index<list.length){
- showQuestion();
- }else{
- document.getElementById("game").style.display="none";
- document.getElementById("finish").style.display="block";
- document.getElementById("score").innerText=points+" / "+list.length;
- document.getElementById("message").innerText=
- points===list.length?"Excellent! Mizo hnam nunphung i hre tha hle!":"Zir chhunzawm zel rawh!";
- }
-}
 </script>
 </body>
-  </html>
-  a
+ </html>
+ 
+["festival","Easy","Chapchar Kut hi eng hnam kut nge?",["Mizo","Punjabi","Tamil","Gujarati"],0,"Chapchar Kut chu Mizo hnam kut a ni."],
+["festival","Easy","Chapchar Kut hi eng thlaah nge hman thin?",["March","January","August","December"],0,"Chapchar Kut hi March thlaah hman thin a ni."],
+["festival","Easy","Mim Kut hi eng thlai nen nge inzawm?",["Mai","Buh","Thei","Vaibel"],0,"Mim Kut hi mai seng leh inzawm a ni."],
+["festival","Easy","Pawl Kut hi eng thil nen nge inzawm?",["Buh seng zawh","Thing phun","In sak","Lung phun"],0,"Pawl Kut hi buh seng zawh hun leh inzawm a ni."],
+["festival","Easy","Mizo kut lar tak pakhat chu eng nge?",["Chapchar Kut","Diwali","Onam","Pongal"],0,"Chapchar Kut hi Mizo kut lar tak a ni."],
+["festival","Medium","Chapchar Kut hman chhan bul ber chu eng nge?",["Ram huan tihfai zawh hlimna","Khawpui din","In sak zawh","Dawr hawng"],0,"Chapchar Kut hi ram huan tihfai zawh hlimna kut a ni."],
+["festival","Medium","Mim Kut hi eng thlaah nge hman thin?",["August","March","January","December"],0,"Mim Kut hi August thlaah hman thin a ni."],
+["festival","Medium","Pawl Kut hi eng thlaah nge hman thin?",["December","February","April","June"],0,"Pawl Kut hi December thlaah hman thin a ni."],
+["festival","Medium","Mizo kut hmanah zai leh lam hi eng atan nge pawimawh?",["Hlimna tarlanna","In sak nan","Ram sem nan","Dawr hawng nan"],0,"Zai leh lam chuan hlimna leh inpawhna a tarlang."],
+["festival","Medium","Chapchar Kut hmanah eng thil nge hmuh theih?",["Hnam lam leh zai","Buh phun","Thing chhum","Lung phun"],0,"Chapchar Kut-ah hnam lam leh zai a awm thin."],
+["festival","Medium","Mizo kut pathum lar takte chu engte nge?",["Chapchar Kut, Mim Kut, Pawl Kut","Diwali, Holi, Eid","Onam, Pongal, Bihu","Christmas, Easter, Holi"],0,"Mizo kut lar pathum chu Chapchar Kut, Mim Kut leh Pawl Kut an ni."],
+["festival","Hard","Chapchar Kut hi eng hun lai nge hman thin?",["Ram huan tihfai zawh hun","Buh seng hun","Thing phun hun","Ruahtui tlak hun"],0,"Chapchar Kut hi ram huan tihfai zawh hlimna kut a ni."],
+["festival","Hard","Mim Kut hi eng thlai seng nen nge inzawm?",["Mai","Buh","Bawngbah","Chawhmeh"],0,"Mim Kut hi mai seng leh inzawm a ni."],
+["festival","Hard","Pawl Kut hi eng hun leh nge inzawm?",["Buh seng zawh hun","Ram huan tihfai hun","Thing phun hun","In sak hun"],0,"Pawl Kut hi buh seng zawh hun leh inzawm a ni."],
+["festival","Hard","Mizo kut hmanah hnam puan chei mawi hi eng atan nge hman?",["Thuam mawi atan","In sak nan","Buh chhang nan","Thing phun nan"],0,"Kut hman hunah hnam puan chei mawiin an thuam thin."],
+["festival","Hard","Mizo kut hmanah khawtlang inpawhna hi eng nge a hlutna?",["Khawtlang inzawmna tihchak","Ramri siam","Dawr hawng","In sak"],0,"Kut hman chuan khawtlang inzawmna a tihchak."],
+["festival","Easy","Chapchar Kut-ah eng lam dan nge lar?",["Cheraw","Bharatanatyam","Kathak","Garba"],0,"Chapchar Kut-ah Cheraw lam a lar."],
+["festival","Medium","Mizo kut hmanah mi tam tak an thawkho thin em?",["Aw, an thawkhawm","Aw, mahni chauh","Awm lo","An kal bo"],0,"Kut hman hi khawtlang thawhhona hun a ni."],
+["festival","Medium","Mizo kut hmanah hlimna tarlanna atan eng nge hman?",["Zai leh lam","In sak","Ram sem","Dawr hawng"],0,"Zai leh lam chu hlimna tarlanna a ni."],
+["festival","Hard","Mizo kut pathum lar takte chu eng vanga pawimawh nge?",["Hnam nunphung leh lo neih nun an tarlang","Sum an siam","Ram an zauh","In an sak"],0,"Mizo kutte hian hnam nunphung leh lo neih nun an tarlang."]
+];
+
+["food","Easy","Bai hi eng thil chawhmeh nge?",["Buh leh thlai chi hrang hrang chawhpawlh","Kawngal","Cake","Noodle"],0,"Bai hi buh leh thlai chi hrang hrang chawhpawlh chawhmeh a ni."],
+["food","Easy","Mizo chawhmeh lar tak pakhat chu eng nge?",["Bai","Pizza","Burger","Sandwich"],0,"Bai hi Mizo chawhmeh lar tak a ni."],
+["food","Easy","Sawhchiar hi eng thil nge?",["Chawhmeh","Puan","In","Hnam lam"],0,"Sawhchiar hi Mizo chawhmeh pakhat a ni."],
+["food","Easy","Mizo chawhmehah bai hi eng nen nge ei thin?",["Chawhmeh leh thingpui nen","Cake nen chauh","Ice cream nen","Chocolate nen"],0,"Bai hi chawhmeh chi hrang hrang nen ei thin a ni."],
+["food","Easy","Mizo chawhmeh siam nan eng thil nge hman thin?",["Thlai leh sa","Chocolate chauh","Milkshake","Cake flour"],0,"Mizo chawhmehah thlai leh sa hman a ni thin."],
+["food","Medium","Bai-ah eng thil nge chawhpawlh thin?",["Buh leh thlai","Thei leh chocolate","Cake leh biscuit","Noodle leh pizza"],0,"Bai-ah buh leh thlai chi hrang hrang chawhpawlh a ni."],
+["food","Medium","Mizo chawhmeh 'Chhangban' tih hi eng ang chawhmeh nge?",["Chhang chi","Sa chi","Thlai chi","Thingpui chi"],0,"Chhangban chu chhang chi a ni."],
+["food","Medium","Mizo chawhmeh siam nan sa eng ang nge hman theih?",["Bawngsa leh vawksa","Fish cake chauh","Chocolate","Biscuit"],0,"Mizo chawhmehah sa chi hrang hrang hman theih a ni."],
+["food","Medium","Mizo chawhmeh siam nan thlai chi eng nge hman theih?",["A vaiin chi hrang hrang","Apple chauh","Orange chauh","Grape chauh"],0,"Thlai chi hrang hrang chawhmeh siam nan hman theih a ni."],
+["food","Medium","Mizo chawhmeh 'Bai' hi eng ang chawhmeh nge?",["Thlai chawhpawlh","Chhang","Cake","Ice cream"],0,"Bai chu thlai chawhpawlh chawhmeh a ni."],
+["food","Medium","Mizo chawhmeh 'Sawhchiar' hi eng nen nge siam thin?",["Buh leh sa","Cake leh milk","Chocolate leh biscuit","Noodle leh cheese"],0,"Sawhchiar hi buh leh sa chawhpawlh chawhmeh a ni."],
+["food","Hard","Mizo chawhmeh siam danah thinghnai hian eng nge a hlutna?",["Chawhmeh tui a siam","Puan a siam","In a siam","Thil dang a siam"],0,"Thinghnai hi chawhmeh tui leh rimtui siam nan hman thin a ni."],
+["food","Hard","Mizo chawhmeh siam nan bekang hi engtin nge hman theih?",["Chawhmeh siam nan","Puan chei nan","In sak nan","Hnam lam nan"],0,"Bekang hi chawhmeh siam nan hman theih a ni."],
+["food","Hard","Mizo chawhmeh 'Bai' hi eng angin nge siam theih?",["Thlai chi hrang hrang chawhpawlh","Thei chauh","Chhang chauh","Sa chauh"],0,"Bai-ah thlai chi hrang hrang chawhpawlh a ni."],
+["food","Hard","Mizo chawhmeh 'Sawhchiar' hi eng ang chawhmeh nge?",["Buh leh sa chawhpawlh","Cake","Biscuit","Ice cream"],0,"Sawhchiar hi buh leh sa chawhpawlh chawhmeh a ni."],
+["food","Easy","Mizo chawhmeh siam nan a hman lar pakhat chu eng nge?",["Chilli","Chocolate","Cheese","Jam"],0,"Chilli hi Mizo chawhmehah hman lar tak a ni."],
+["food","Easy","Mizo chawhmeh ei nan eng nge hman theih?",["Thingphut leh spoon","Pencil","Book","Phone"],0,"Chawhmeh ei nan thingphut leh spoon hman theih a ni."],
+["food","Medium","Mizo chawhmeh siam nan thinghnai hi eng atan nge hman?",["Rimtui leh tui siam nan","Puan siam nan","In siam nan","Lam nan"],0,"Thinghnai hi chawhmeh rimtui siam nan hman theih a ni."],
+["food","Hard","Mizo chawhmeh siam nan thlai chi hrang hrang hman hi eng nge a thatna?",["Chawhmeh chi hrang hrang siam theih","In siam theih","Puan siam theih","Hnam lam siam theih"],0,"Thlai chi hrang hrang hmangin chawhmeh chi hrang hrang siam theih a ni."],
+["food","Medium","Mizo chawhmeh 'Bai' hi eng nen nge ei theih?",["Buh leh chawhmeh dang nen","Cake chauh nen","Ice cream nen","Chocolate nen"],0,"Bai hi buh leh chawhmeh dang nen ei theih a ni."]
+];
+
+["history","Easy","Mizoram khawpui ber chu khawiah nge?",["Aizawl","Lunglei","Champhai","Kolasib"],0,"Aizawl hi Mizoram khawpui a ni."],
+["history","Easy","Mizoram hi India ram state eng nge?",["State","Union Territory","District","Country"],0,"Mizoram hi India ram state a ni."],
+["history","Easy","Mizoram Statehood Day hi eng ni nge?",["February 20","January 26","August 15","October 2"],0,"February ni 20, 1987 khan Mizoram statehood a chang."],
+["history","Easy","Mizoram hi India ram khawchhak lamah a awm em?",["Aw, a awm","Awm lo","India pawnah a awm","A hriat loh"],0,"Mizoram hi India ram khawchhak lam state a ni."],
+["history","Easy","Mizoram ramri a pualtu ram pakhat chu eng nge?",["Bangladesh","Sri Lanka","Nepal","Maldives"],0,"Bangladesh hi Mizoram ramri a pualtu ram pakhat a ni."],
+["history","Medium","Mizoram ramri a pualtu ram dang chu eng nge?",["Myanmar","Bhutan","Pakistan","Afghanistan"],0,"Myanmar hi Mizoram ramri a pualtu ram a ni."],
+["history","Medium","Mizoram hi India ram state engzatna nge a nih?",["23-na","10-na","15-na","30-na"],0,"Mizoram hi India ram state 23-na a ni."],
+["history","Medium","Mizoram statehood a chan kum chu eng nge?",["1987","1972","1990","2000"],0,"Mizoram hi 1987-ah statehood a chang."],
+["history","Medium","Mizoram district pakhat chu eng nge?",["Lunglei","Imphal","Kohima","Shillong"],0,"Lunglei hi Mizoram district pakhat a ni."],
+["history","Medium","Mizoram district dang pakhat chu eng nge?",["Champhai","Agartala","Guwahati","Dimapur"],0,"Champhai hi Mizoram district pakhat a ni."],
+["history","Medium","Mizoram Assembly House chu khawiah nge awm?",["Aizawl","Lunglei","Saiha","Serchhip"],0,"Mizoram Assembly House chu Aizawl-ah a awm."],
+["history","Hard","Mizoram Statehood Act hi eng kumah nge passed a nih?",["1986","1972","1995","2001"],0,"Mizoram Statehood Act hi 1986-ah passed a ni."],
+["history","Hard","Mizoram hi North-East India state zinga mi a ni em?",["Aw, a ni","A ni lo","South India-ah a ni","West India-ah a ni"],0,"Mizoram hi North-East India state a ni."],
+["history","Hard","Mizoram ramri a pualtu Indian state pakhat chu eng nge?",["Assam","Kerala","Punjab","Goa"],0,"Assam hi Mizoram ramri a pualtu Indian state pakhat a ni."],
+["history","Hard","Mizoram ramri a pualtu Indian state dang chu eng nge?",["Manipur","Rajasthan","Gujarat","Haryana"],0,"Manipur hi Mizoram ramri a pualtu Indian state a ni."],
+["history","Easy","Mizoram hmun lar tak pakhat chu eng nge?",["Reiek","Taj Mahal","Gateway of India","Red Fort"],0,"Reiek hi Mizoram hmun lar tak a ni."],
+["history","Easy","Mizoram tlang lar tak pakhat chu eng nge?",["Phawngpui","Everest","Aravalli","Nilgiri"],0,"Phawngpui hi Mizoram tlang sang ber a ni."],
+["history","Medium","Mizoram ram pum huam chhunga khawpui lian tak pakhat chu eng nge?",["Lunglei","Delhi","Mumbai","Chennai"],0,"Lunglei hi Mizoram khawpui lian tak pakhat a ni."],
+["history","Medium","Mizoram sorkar hmun pawimawh tak chu khawiah nge awm?",["Aizawl","Kolasib","Lawngtlai","Mamit"],0,"Mizoram sorkar hmun pawimawh takte chu Aizawl-ah an awm."],
+["history","Hard","Mizoram Statehood Day hi eng thil hriat rengna ni nge?",["Mizoram state a nihna","India zalenna","Republic Day","Christmas"],0,"February 20, 1987 hi Mizoram statehood a chan ni a ni."]
+];
