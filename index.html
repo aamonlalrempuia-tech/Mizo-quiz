@@ -205,44 +205,19 @@ showQuestion();
 
 function showQuestion(){
 answered=false;
-const q=quiz[current];
-
-document.getElementById("categoryName").textContent=categoryNames[q[0]]+" | "+q[1];
-document.getElementById("number").textContent="Zawhna "+(current+1)+" / "+quiz.length;
-document.getElementById("bar").style.width=(current/quiz.length*100)+"%";
-document.getElementById("question").textContent=q[2];
-document.getElementById("feedback").textContent="";
-document.getElementById("explanation").textContent="";
-document.getElementById("next").classList.add("hidden");
-
-const answers=document.getElementById("answers");
-answers.innerHTML="";
-
-q[3].forEach((answer,index)=>{
-const btn=document.createElement("button");
-btn.className="option";
-btn.textContent=String.fromCharCode(65+index)+". "+answer;
-btn.onclick=()=>checkAnswer(index);
-answers.appendChild(btn);
-});
-}
-function showQuestion(){
-answered=false;
 
 const q=quiz[current];
-
 const shuffled=q[3].map((answer,index)=>({
 answer:answer,
 correct:index===q[4]
 }));
 
 shuffled.sort(()=>Math.random()-0.5);
-
-correctIndex=shuffled.findIndex(a=>a.correct);
+correctIndex=shuffled.findIndex(item=>item.correct);
 
 document.getElementById("question").textContent=q[2];
 
-const options=document.getElementById("options");
+const options=document.getElementById("answers");
 options.innerHTML="";
 
 shuffled.forEach((item,index)=>{
@@ -257,8 +232,7 @@ document.getElementById("feedback").textContent="";
 document.getElementById("explanation").textContent="";
 document.getElementById("next").classList.add("hidden");
  }
- 
-function nextQuestion(){
+ function nextQuestion(){
 if(current<quiz.length-1){
 current++;
 showQuestion();
