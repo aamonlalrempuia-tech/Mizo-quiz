@@ -228,63 +228,34 @@ answers.appendChild(btn);
 }
 function showQuestion(){
 answered=false;
-const q=quiz[current];
 
-document.getElementById("categoryName").textContent=categoryNames[q[0]]+" | "+q[1];
-document.getElementById("number").textContent="Zawhna "+(current+1)+" / "+quiz.length;
-document.getElementById("bar").style.width=(current/quiz.length*100)+"%";
-document.getElementById("question").textContent=q[2];
-document.getElementById("feedback").textContent="";
-document.getElementById("explanation").textContent="";
-document.getElementById("next").classList.add("hidden");
+const q=quiz[current];
 
 const shuffled=q[3].map((answer,index)=>({
 answer:answer,
 correct:index===q[4]
-})).sort(()=>Math.random()-0.5);
+}));
+
+shuffled.sort(()=>Math.random()-0.5);
 
 correctIndex=shuffled.findIndex(a=>a.correct);
 
-const answers=document.getElementById("answers");
-answers.innerHTML="";
+document.getElementById("question").textContent=q[2];
+
+const options=document.getElementById("options");
+options.innerHTML="";
 
 shuffled.forEach((item,index)=>{
-const btn=document.createElement("button");
-btn.className="option";
-btn.textContent=String.fromCharCode(65+index)+". "+item.answer;
-btn.onclick=()=>checkAnswer(index);
-answers.appendChild(btn);
-});
- }
-
-function checkAnswer(index){
-if(answered)return;
-answered=true;
-
-const q=quiz[current];
-const buttons=document.querySelectorAll(".option");
-
-buttons.forEach((btn,i)=>{
-btn.disabled=true;
-if(i===correctIndex)btn.classList.add("correct");
-if(i===index&&index!==correctIndex)btn.classList.add("wrong");
+const button=document.createElement("button");
+button.className="option";
+button.textContent=item.answer;
+button.onclick=()=>checkAnswer(index);
+options.appendChild(button);
 });
 
-if(index===correctIndex){
-score++;
-document.getElementById("feedback").textContent="A dik e! 🎉";
-}else{
-document.getElementById("feedback").textContent="A dik lo. Chhanna dik chu: "+q[3][q[4]];
-}
-
-document.getElementById("explanation").textContent=q[5];
-
-document.getElementById("bar").style.width=
-((current+1)/quiz.length*100)+"%";
-
-const next=document.getElementById("next");
-next.textContent=current===quiz.length-1?"Result en rawh":"Zawhna dawt leh";
-next.classList.remove("hidden");
+document.getElementById("feedback").textContent="";
+document.getElementById("explanation").textContent="";
+document.getElementById("next").classList.add("hidden");
  }
  
 function nextQuestion(){
