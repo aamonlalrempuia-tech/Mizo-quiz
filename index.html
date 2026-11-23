@@ -54,7 +54,7 @@ button:disabled{opacity:.65}
 </select>
 <button onclick="startQuiz()">Quiz tan rawh</button>
 </section>
-
+<p>🏆 High Score: <span id="highScoreDisplay">0</span></p>
 <section class="card hidden" id="game">
 <p class="small" id="categoryName"></p>
 <p id="number"></p>
@@ -65,6 +65,7 @@ button:disabled{opacity:.65}
 <p class="small" id="explanation"></p>
 <button id="next" class="hidden" onclick="nextQuestion()">Zawhna dawt leh</button>
 </section>
+ <button id="fifty" onclick="useFiftyFifty()">💡 50:50 Lifeline</button>
 
 <section class="card hidden" id="result">
 <h2>Quiz i zawh ta!</h2>
@@ -261,6 +262,22 @@ const next=document.getElementById("next");
 next.textContent=current===quiz.length-1?"Result en rawh":"Zawhna dawt leh";
 next.classList.remove("hidden");
  }
+ function useFiftyFifty(){
+const button=document.getElementById("fifty");
+if(button.disabled)return;
+
+const answers=document.querySelectorAll(".option");
+let removed=0;
+
+answers.forEach((answer,index)=>{
+if(index!==correctIndex && removed<2){
+answer.style.display="none";
+removed++;
+}
+});
+
+button.disabled=true;
+ }
  function nextQuestion(){
 if(current<quiz.length-1){
 current++;
@@ -275,7 +292,11 @@ document.getElementById("game").classList.add("hidden");
 document.getElementById("result").classList.remove("hidden");
 
 document.getElementById("score").textContent=score+" / "+quiz.length;
-
+if(score>highScore){
+highScore=score;
+localStorage.setItem("mizoHighScore",highScore);
+}
+document.getElementById("highScoreDisplay").textContent=highScore;
 let percent=Math.round(score/quiz.length*100);
 let message="I bei chho zel rawh!";
 
