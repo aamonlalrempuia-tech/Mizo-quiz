@@ -232,6 +232,35 @@ document.getElementById("feedback").textContent="";
 document.getElementById("explanation").textContent="";
 document.getElementById("next").classList.add("hidden");
  }
+ function checkAnswer(index){
+if(answered)return;
+answered=true;
+
+const q=quiz[current];
+const buttons=document.querySelectorAll(".option");
+
+buttons.forEach((btn,i)=>{
+btn.disabled=true;
+if(i===correctIndex)btn.classList.add("correct");
+if(i===index && i!==correctIndex)btn.classList.add("wrong");
+});
+
+if(index===correctIndex){
+score++;
+document.getElementById("feedback").textContent="A dik e! 🎉";
+}else{
+document.getElementById("feedback").textContent=
+"A dik lo. Chhanna dik chu: "+q[3][q[4]];
+}
+
+document.getElementById("explanation").textContent=q[5];
+document.getElementById("bar").style.width=
+((current+1)/quiz.length*100)+"%";
+
+const next=document.getElementById("next");
+next.textContent=current===quiz.length-1?"Result en rawh":"Zawhna dawt leh";
+next.classList.remove("hidden");
+ }
  function nextQuestion(){
 if(current<quiz.length-1){
 current++;
